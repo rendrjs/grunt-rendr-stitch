@@ -48,7 +48,13 @@ grunt.initConfig({
 })
 ```
 
-Aliases allows us to use the the same paths for requiring NPM modules in both Node.js and in the browser. For example:
+We can then use Stitch in the browser to require any of the source files.
+
+```js
+var UserShowView = require('app/views/user_show_view');
+```
+
+Aliases allow us to use the the same paths for requiring NPM modules in both Node.js and in the browser. For example:
 
 ```js
 var BaseView = require('rendr/shared/base/view');
