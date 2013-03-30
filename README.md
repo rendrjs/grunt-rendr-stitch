@@ -25,65 +25,87 @@ In your project's Gruntfile, add a section named `rendr_stitch` to the data obje
 ```js
 grunt.initConfig({
   rendr_stitch: {
-    options: {
-      // Task-specific options go here.
-    },
-    your_target: {
-      // Target-specific file lists and/or options go here.
-    },
+    compile: {
+      options: {
+
+      },
+    }
   },
 })
 ```
 
 ### Options
 
-#### options.separator
-Type: `String`
-Default value: `',  '`
+#### options.dependencies
+Type: `Array`
+Default value: `[]`
 
-A string value that is used to do something with whatever.
+An array of file glob patterns to pass as dependencies to `stitch.createPackage()`. These files are prepended to the bundled JavaScript package as-is, without being wrapped as a Stitch module. This is useful for third-party client-side only files, such as jQuery, that aren't wrapped in a CommonJS module.
 
-#### options.punctuation
-Type: `String`
-Default value: `'.'`
+#### options.aliases
+Type: `Array`
+Default value: `[]`
 
-A string value that is used to do something else with whatever else.
+Aliases provide a way to do fancy bundling of Stitch packages in order to replicate something like NPM module paths from Node. Each element in the array is an object with `from` and `to` properties. For example:
+
+```js
+dependencies: [
+  {from: 'some/path/on/disk', to: 'fancy/path/in/client'}
+]
+``` 
+
+Suppose the `some/path/on/disk` directory looks like this:
+
+    |- util.js
+    |- lib/something.js
+
+Then, in the client-side you can require the module using the aliased path:
+
+```js
+var something = require('fancy/path/in/client/lib/something');
+```
 
 ### Usage Examples
 
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
-
-```js
-grunt.initConfig({
-  rendr_stitch: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-})
-```
-
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
+#### Compile
+In this example, you can see how to use `options.dependencies` and `options.aliases`.
 
 ```js
 grunt.initConfig({
   rendr_stitch: {
     options: {
-      separator: ': ',
-      punctuation: ' !!!',
+      dependencies: [
+    	'assets/vendor/**/*.js'
+      ],
+      aliases: [
+      	{from: 'node_modules/rendr/shared', to: 'rendr/shared'},
+      	{from: 'node_modules/rendr/client', to: 'rendr/client'}
+      ]
     },
     files: {
-      'dest/default_options': ['src/testing', 'src/123'],
+      dest: 'public/bundle.js',
+      src: [
+      	'app/**/*.js',
+      	'node_modules/rendr/shared/**/*.coffee',
+      	'node_modules/rendr/client/**/*.coffee'
+      ],
     },
   },
 })
 ```
 
+The use of aliases is what what allows us to use the the same paths for requiring Rendr modules in both Node.js and in the browser.  For example:
+
+```js
+var BaseView = require('rendr/shared/base/view');
+```
+
+In Node.js, this path will tell the module loader to look into the NPM module named `rendr` to find the specified module. In the browser, we can do the same thing because we've bundled `node_modules/rendr/shared/**/*.coffee` and set up an alias to `rendr/shared`.
+
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
-_(Nothing yet)_
+
+### 0.0.1
+Initial release.
