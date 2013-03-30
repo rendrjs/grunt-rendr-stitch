@@ -42,10 +42,10 @@ grunt.initConfig({
       	'app/**/*.js',
       	'node_modules/rendr/shared/**/*.coffee',
       	'node_modules/rendr/client/**/*.coffee'
-      ],
-    },
-  },
-})
+      ]
+    }
+  }
+});
 ```
 
 We can then use Stitch in the browser to require any of the source files.
