@@ -22,17 +22,39 @@ grunt.loadNpmTasks('grunt-rendr-stitch');
 ### Overview
 In your project's Gruntfile, add a section named `rendr_stitch` to the data object passed into `grunt.initConfig()`.
 
+In this example, you can see how to use `options.dependencies` and `options.aliases`.
+
 ```js
 grunt.initConfig({
   rendr_stitch: {
-    compile: {
-      options: {
-
-      },
-    }
+    options: {
+      dependencies: [
+    	'assets/vendor/**/*.js'
+      ],
+      aliases: [
+      	{from: 'node_modules/rendr/shared', to: 'rendr/shared'},
+      	{from: 'node_modules/rendr/client', to: 'rendr/client'}
+      ]
+    },
+    files: {
+      dest: 'public/bundle.js',
+      src: [
+      	'app/**/*.js',
+      	'node_modules/rendr/shared/**/*.coffee',
+      	'node_modules/rendr/client/**/*.coffee'
+      ],
+    },
   },
 })
 ```
+
+Aliases allows us to use the the same paths for requiring NPM modules in both Node.js and in the browser. For example:
+
+```js
+var BaseView = require('rendr/shared/base/view');
+```
+
+In Node.js, this path will tell the module loader to look into the NPM module named `rendr` to find the specified module. In the browser, we can do the same thing because we've bundled `node_modules/rendr/shared/**/*.coffee` and set up an alias to `rendr/shared`.
 
 ### Options
 
@@ -64,43 +86,6 @@ Then, in the client-side you can require the module using the aliased path:
 ```js
 var something = require('fancy/path/in/client/lib/something');
 ```
-
-### Usage Examples
-
-#### Compile
-In this example, you can see how to use `options.dependencies` and `options.aliases`.
-
-```js
-grunt.initConfig({
-  rendr_stitch: {
-    options: {
-      dependencies: [
-    	'assets/vendor/**/*.js'
-      ],
-      aliases: [
-      	{from: 'node_modules/rendr/shared', to: 'rendr/shared'},
-      	{from: 'node_modules/rendr/client', to: 'rendr/client'}
-      ]
-    },
-    files: {
-      dest: 'public/bundle.js',
-      src: [
-      	'app/**/*.js',
-      	'node_modules/rendr/shared/**/*.coffee',
-      	'node_modules/rendr/client/**/*.coffee'
-      ],
-    },
-  },
-})
-```
-
-The use of aliases is what what allows us to use the the same paths for requiring Rendr modules in both Node.js and in the browser.  For example:
-
-```js
-var BaseView = require('rendr/shared/base/view');
-```
-
-In Node.js, this path will tell the module loader to look into the NPM module named `rendr` to find the specified module. In the browser, we can do the same thing because we've bundled `node_modules/rendr/shared/**/*.coffee` and set up an alias to `rendr/shared`.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
