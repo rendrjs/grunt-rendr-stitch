@@ -80,7 +80,7 @@ Aliases provide a way to do fancy bundling of Stitch packages in order to replic
 dependencies: [
   {from: 'some/path/on/disk', to: 'fancy/path/in/client'}
 ]
-``` 
+```
 
 Suppose the `some/path/on/disk` directory looks like this:
 
@@ -97,6 +97,9 @@ var something = require('fancy/path/in/client/lib/something');
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
+
+### 0.0.3
+Clean `tmp` dir on every run, to prevent picking up old files.
 
 ### 0.0.1
 Initial release.

@@ -67,6 +67,11 @@ module.exports = function(grunt) {
         return [filepath, tmpDest];
       });
 
+      // Clean the tmp dir, to prevent picking up old files.
+      if (grunt.file.exists(tmpDir)) {
+        grunt.file.delete(tmpDir);
+      }
+
       // Copy everything to the tmp directory, which will be the
       // base path for the Stitch bundle.
       pathMaps.forEach(function(pathMap) {
