@@ -98,6 +98,15 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 ## Release History
 
+### 0.0.6
+Use `path.normalize()` with `npmDependencies` for more flexibility.
+
+### 0.0.5
+Add `npmDependencies` option for packaging NPM modules for browser.
+
+### 0.0.4
+Swap out `stitch` dependency for fork that supports Windows file paths.
+
 ### 0.0.3
 Clean `tmp` dir on every run, to prevent picking up old files.
 
