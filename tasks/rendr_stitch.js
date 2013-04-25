@@ -18,10 +18,11 @@ module.exports = function(grunt) {
   // Please see the Grunt documentation for more information regarding task
   // creation: http://gruntjs.com/creating-tasks
 
-  grunt.registerMultiTask('rendr_stitch', 'Your task description goes here.', function() {
+  grunt.registerMultiTask('rendr_stitch', 'Create a Stitch bundle for use with Rendr.', function() {
     // Merge task-specific and/or target-specific options with these defaults.
     var options = this.options({
       dependencies: [],
+      npmDependencies: {},
       aliases: []
     });
 
@@ -55,17 +56,22 @@ module.exports = function(grunt) {
         }
       }).map(function(filepath) {
         var matches = aliases.length && filepath.match(aliasRe),
-            tmpDest;
+            dest;
         if (matches) {
           // If the file is in an aliased directory, then copy it to the
           // tmp directory with the alias as a prefix.
-          tmpDest = filepath.replace(matches[0], tmpDir + '/' + aliasMap[matches[0]]);
+          dest = filepath.replace(matches[0], aliasMap[matches[0]]);
         } else {
           // Otherwise, just copy to the tmp directory.
-          tmpDest = tmpDir + '/' + filepath;
+          dest =  filepath;
         }
-        return [filepath, tmpDest];
+        return [filepath, dest];
       });
+
+      // Copy over any NPM dependencies, so they can be `require`d in a sexy way.
+      pathMaps = pathMaps.concat(grunt.util._.map(options.npmDependencies, function(src, module) {
+        return ['node_modules/' + module + '/' + src, module + '.js'];
+      }));
 
       // Clean the tmp dir, to prevent picking up old files.
       if (grunt.file.exists(tmpDir)) {
@@ -75,7 +81,7 @@ module.exports = function(grunt) {
       // Copy everything to the tmp directory, which will be the
       // base path for the Stitch bundle.
       pathMaps.forEach(function(pathMap) {
-        grunt.file.copy(pathMap[0], pathMap[1]);
+        grunt.file.copy(pathMap[0], tmpDir + '/' + pathMap[1]);
       });
 
       // Create the Stitch package.
