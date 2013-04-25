@@ -8,7 +8,8 @@
 
 'use strict';
 
-var stitch = require('stitch');
+var path = require('path'),
+    stitch = require('stitch');
 
 // Require CoffeeScript for ability to package CS files.
 require('coffee-script');
@@ -70,7 +71,8 @@ module.exports = function(grunt) {
 
       // Copy over any NPM dependencies, so they can be `require`d in a sexy way.
       pathMaps = pathMaps.concat(grunt.util._.map(options.npmDependencies, function(src, module) {
-        return ['node_modules/' + module + '/' + src, module + '.js'];
+        var filepath = path.normalize('node_modules/' + module + '/' + src);
+        return [filepath, module + '.js'];
       }));
 
       // Clean the tmp dir, to prevent picking up old files.
