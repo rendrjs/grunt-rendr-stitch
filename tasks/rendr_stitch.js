@@ -86,17 +86,41 @@ module.exports = function(grunt) {
         grunt.file.copy(pathMap[0], tmpDir + '/' + pathMap[1]);
       });
 
-      // Create the Stitch package.
-      stitch.createPackage({
-        paths: [tmpDir],
-        dependencies: dependencies
-      }).compile(function(err, source) {
-        if (err) { return done(err); }
-        grunt.file.write(f.dest, source);
-        grunt.log.writeln('File "' + f.dest + '" created.');
-        done();
+      assertFiles(pathMaps.length, tmpDir, function() {
+        // Create the Stitch package.
+        stitch.createPackage({
+          paths: [tmpDir],
+          dependencies: dependencies
+        }).compile(function(err, source) {
+          if (err) { return done(err); }
+          grunt.file.write(f.dest, source);
+          grunt.log.writeln('File "' + f.dest + '" created.');
+          done();
+        });
       });
+
     });
   });
+
+  /**
+   * Sometimes, the Stitch compliation appears to happen before all files are copied over to
+   * the `tmpDir`.  We simply wait until they are.
+   */
+  function assertFiles(expectedNumFiles, tmpDir, callback) {
+    function countFiles() {
+      var numFiles = 0;
+      grunt.file.recurse(tmpDir, function(abspath, rootdir, subdir, filename) {
+        numFiles++;
+      });
+      return numFiles === expectedNumFiles;
+    }
+
+    var interval = setInterval(function() {
+      if (countFiles()) {
+        clearInterval(interval);
+        callback();
+      }
+    }, 100);
+  }
 
 };
