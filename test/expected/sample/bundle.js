@@ -5,6 +5,7 @@ function $(selector) {
 (function(/*! Stitch !*/) {
   if (!this.require) {
     var modules = {}, cache = {}, require = function(name, root) {
+      name = name.replace(/\\\\/g, '/');
       var path = expand(root, name), module = cache[path], fn;
       if (module) {
         return module.exports;
