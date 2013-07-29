@@ -29,7 +29,8 @@
   },
   "dependencies": {
     "stitch": "git://github.com/joeyespo/stitch#2e4e6cdb2be204740ca341da787aaac00d347721",
-    "coffee-script": "~1.6.2"
+    "coffee-script": "1.6.2",
+    "resolve": "0.4.0"
   },
   "devDependencies": {
     "grunt-contrib-jshint": "~0.1.1",
