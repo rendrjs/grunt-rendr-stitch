@@ -98,6 +98,10 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 ## Release History
 
+### 0.1.0
+Change format of `npmDependencies` option. Now, provide array of module names, and
+`grunt-rendr-stitch` will use `resolve` to find the correct file on disk.
+
 ### 0.0.6
 Use `path.normalize()` with `npmDependencies` for more flexibility.
 
