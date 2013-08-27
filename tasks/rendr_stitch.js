@@ -9,7 +9,8 @@
 'use strict';
 
 var path = require('path'),
-    stitch = require('stitch');
+    stitch = require('stitch'),
+    async = require('async');
 
 // Require CoffeeScript for ability to package CS files.
 require('coffee-script');
@@ -45,61 +46,70 @@ module.exports = function(grunt) {
     aliasRe = new RegExp('^(' + grunt.util._.pluck(aliases, 'from').join('|') + ')');
 
     // Iterate over all specified file groups.
-    this.files.forEach(function(f) {
-
-      var pathMaps = f.src.filter(function(filepath) {
-        // Warn on and remove invalid source files (if nonull was set).
-        if (!grunt.file.exists(filepath)) {
-          grunt.log.warn('Source file "' + filepath + '" not found.');
-          return false;
-        } else {
-          return true;
-        }
-      }).map(function(filepath) {
-        var matches = aliases.length && filepath.match(aliasRe),
+    async.series(
+      this.files.map(function(f) {
+        // transform each file group into a callback for async.series
+        return function(cb) {
+          var pathMaps = f.src.filter(function(filepath) {
+            // Warn on and remove invalid source files (if nonull was set).
+            if (!grunt.file.exists(filepath)) {
+              grunt.log.warn('Source file "' + filepath + '" not found.');
+              return false;
+            } else {
+              return true;
+            }
+          }).map(function(filepath) {
+            var matches = aliases.length && filepath.match(aliasRe),
             dest;
-        if (matches) {
-          // If the file is in an aliased directory, then copy it to the
-          // tmp directory with the alias as a prefix.
-          dest = filepath.replace(matches[0], aliasMap[matches[0]]);
-        } else {
-          // Otherwise, just copy to the tmp directory.
-          dest =  filepath;
+            if (matches) {
+              // If the file is in an aliased directory, then copy it to the
+              // tmp directory with the alias as a prefix.
+              dest = filepath.replace(matches[0], aliasMap[matches[0]]);
+            } else {
+              // Otherwise, just copy to the tmp directory.
+              dest =  filepath;
+            }
+            return [filepath, dest];
+          });
+
+          // Copy over any NPM dependencies, so they can be `require`d in a sexy way.
+          if (f.includeDependencies !== false) {
+            pathMaps = pathMaps.concat(grunt.util._.map(options.npmDependencies, function(src, module) {
+              var filepath = path.normalize('node_modules/' + module + '/' + src);
+              return [filepath, module + '.js'];
+            }));
+          }
+
+          // Clean the tmp dir, to prevent picking up old files.
+          if (grunt.file.exists(tmpDir)) {
+            grunt.file.delete(tmpDir);
+          }
+
+          // Copy everything to the tmp directory, which will be the
+          // base path for the Stitch bundle.
+          pathMaps.forEach(function(pathMap) {
+            grunt.file.copy(pathMap[0], tmpDir + '/' + pathMap[1]);
+          });
+
+          assertFiles(pathMaps.length, tmpDir, function() {
+            // Create the Stitch package.
+            stitch.createPackage({
+              paths: [tmpDir],
+              dependencies: (f.includeDependencies !== false) ? dependencies : []
+            }).compile(function(err, source) {
+              if (err) { return done(err); }
+              grunt.file.write(f.dest, source);
+              grunt.log.writeln('File "' + f.dest + '" created.');
+              // move on to next file group
+              cb(null, f.dest);
+            });
+          });
         }
-        return [filepath, dest];
+      }),
+      // async.series completion callback to signal grunt task complete
+      function() {
+        done();
       });
-
-      // Copy over any NPM dependencies, so they can be `require`d in a sexy way.
-      pathMaps = pathMaps.concat(grunt.util._.map(options.npmDependencies, function(src, module) {
-        var filepath = path.normalize('node_modules/' + module + '/' + src);
-        return [filepath, module + '.js'];
-      }));
-
-      // Clean the tmp dir, to prevent picking up old files.
-      if (grunt.file.exists(tmpDir)) {
-        grunt.file.delete(tmpDir);
-      }
-
-      // Copy everything to the tmp directory, which will be the
-      // base path for the Stitch bundle.
-      pathMaps.forEach(function(pathMap) {
-        grunt.file.copy(pathMap[0], tmpDir + '/' + pathMap[1]);
-      });
-
-      assertFiles(pathMaps.length, tmpDir, function() {
-        // Create the Stitch package.
-        stitch.createPackage({
-          paths: [tmpDir],
-          dependencies: dependencies
-        }).compile(function(err, source) {
-          if (err) { return done(err); }
-          grunt.file.write(f.dest, source);
-          grunt.log.writeln('File "' + f.dest + '" created.');
-          done();
-        });
-      });
-
-    });
   });
 
   /**
