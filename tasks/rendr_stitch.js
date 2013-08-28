@@ -73,12 +73,10 @@ module.exports = function(grunt) {
           });
 
           // Copy over any NPM dependencies, so they can be `require`d in a sexy way.
-          if (f.includeDependencies !== false) {
-            pathMaps = pathMaps.concat(grunt.util._.map(options.npmDependencies, function(src, module) {
-              var filepath = path.normalize('node_modules/' + module + '/' + src);
-              return [filepath, module + '.js'];
-            }));
-          }
+          pathMaps = pathMaps.concat(grunt.util._.map(options.npmDependencies, function(src, module) {
+            var filepath = path.normalize('node_modules/' + module + '/' + src);
+            return [filepath, module + '.js'];
+          }));
 
           // Clean the tmp dir, to prevent picking up old files.
           if (grunt.file.exists(tmpDir)) {
@@ -95,7 +93,7 @@ module.exports = function(grunt) {
             // Create the Stitch package.
             stitch.createPackage({
               paths: [tmpDir],
-              dependencies: (f.includeDependencies !== false) ? dependencies : []
+              dependencies: dependencies
             }).compile(function(err, source) {
               if (err) { return done(err); }
               grunt.file.write(f.dest, source);
@@ -104,7 +102,7 @@ module.exports = function(grunt) {
               cb(null, f.dest);
             });
           });
-        }
+        };
       }),
       // async.series completion callback to signal grunt task complete
       function() {

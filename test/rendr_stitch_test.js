@@ -34,8 +34,8 @@ exports.rendr_stitch = {
     var expected = grunt.file.read('test/expected/sample/bundle.js');
     test.equal(actual, expected, 'should generate a proper bundle.');
 
-    var actual = grunt.file.read('tmp/test/sample/no-deps.js');
-    var expected = grunt.file.read('test/expected/sample/no-deps.js');
+    actual = grunt.file.read('tmp/test/sample/other-bundle.js');
+    expected = grunt.file.read('test/expected/sample/other-bundle.js');
     test.equal(actual, expected, 'should generate a 2nd bundle w/o dependencies.');
 
     test.done();

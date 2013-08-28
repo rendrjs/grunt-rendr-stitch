@@ -49,8 +49,7 @@ module.exports = function(grunt) {
             'test/fixtures/sample/some_module/shared/**/*.js'
           ]
         }, {
-          includeDependencies: false,
-          dest: 'tmp/test/sample/no-deps.js',
+          dest: 'tmp/test/sample/other-bundle.js',
           src: [
             'test/fixtures/sample/other/**/*.js'
           ]
