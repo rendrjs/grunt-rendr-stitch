@@ -28,11 +28,15 @@ exports.rendr_stitch = {
     done();
   },
   sample: function(test) {
-    test.expect(1);
+    test.expect(2);
 
     var actual = grunt.file.read('tmp/test/sample/bundle.js');
     var expected = grunt.file.read('test/expected/sample/bundle.js');
     test.equal(actual, expected, 'should generate a proper bundle.');
+
+    actual = grunt.file.read('tmp/test/sample/other-bundle.js');
+    expected = grunt.file.read('test/expected/sample/other-bundle.js');
+    test.equal(actual, expected, 'should generate a 2nd bundle w/o dependencies.');
 
     test.done();
   },
