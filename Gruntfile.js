@@ -48,6 +48,11 @@ module.exports = function(grunt) {
             'test/fixtures/sample/app/**/*.js',
             'test/fixtures/sample/some_module/shared/**/*.js'
           ]
+        }, {
+          dest: 'tmp/test/sample/other-bundle.js',
+          src: [
+            'test/fixtures/sample/other/**/*.js'
+          ]
         }]
       },
       // default_options: {
