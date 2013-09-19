@@ -98,6 +98,9 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 ## Release History
 
+### 0.0.8
+Better support for multi tasks.
+
 ### 0.0.6
 Use `path.normalize()` with `npmDependencies` for more flexibility.
 
