@@ -1,15 +1,15 @@
 {
   "name": "grunt-rendr-stitch",
-  "description": "Use Stitch to package up your modules for use with Rendr (github.com/airbnb/rendr).",
+  "description": "Use Stitch to package up your modules for use with Rendr (<https://github.com/airbnb/rendr>).",
   "version": "0.0.8",
-  "homepage": "",
+  "homepage": "https://github.com/airbnb/grunt-rendr-stitch",
   "author": {
     "name": "Spike Brehm",
     "email": "ocelot@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "github.com/airbnb/grunt-rendr-stitch.git"
+    "url": "https://github.com/airbnb/grunt-rendr-stitch.git"
   },
   "bugs": {
     "url": "https://github.com/airbnb/grunt-rendr-stitch/issues"
