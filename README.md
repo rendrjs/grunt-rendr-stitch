@@ -53,7 +53,7 @@ grunt.initConfig({
 });
 ```
 
-The `rendre_stitch` task shown above will output a single file named `bundle.js` that includes all dependencies, npm dependencies, plus your app source files.
+The `rendr_stitch` task shown above will output a single file named `bundle.js` that includes all dependencies, npm dependencies, plus your app source files.
 
 We can then use Stitch in the browser to require any of the source files. Stitch allows you to use the same syntax to `require` modules in client and server code.
 
