@@ -1,6 +1,6 @@
 # grunt-rendr-stitch
 
-> Use Stitch to package up your modules for use with Rendr (github.com/airbnb/rendr).
+> Use Stitch to package up your modules for use with [Rendr](https://github.com/airbnb/rendr).
 
 ## Getting Started
 This plugin requires Grunt `~0.4.1`
@@ -11,7 +11,7 @@ If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out th
 npm install grunt-rendr-stitch --save-dev
 ```
 
-One the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
+Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
 
 ```js
 grunt.loadNpmTasks('grunt-rendr-stitch');
@@ -27,28 +27,35 @@ In this example, you can see how to use `options.dependencies` and `options.alia
 ```js
 grunt.initConfig({
   rendr_stitch: {
-    options: {
-      dependencies: [
-    	'assets/vendor/**/*.js'
-      ],
-      aliases: [
-      	{from: 'node_modules/rendr/shared', to: 'rendr/shared'},
-      	{from: 'node_modules/rendr/client', to: 'rendr/client'}
-      ]
-    },
-    files: {
-      dest: 'public/bundle.js',
-      src: [
-      	'app/**/*.js',
-      	'node_modules/rendr/shared/**/*.coffee',
-      	'node_modules/rendr/client/**/*.coffee'
-      ]
+    compile: {
+      options: {
+        dependencies: [
+          'assets/vendor/**/*.js'
+        ],
+        npmDependencies: {
+          underscore: '../rendr/node_modules/underscore/underscore.js'
+        },
+        aliases: [
+          {from: 'node_modules/rendr/shared', to: 'rendr/shared'},
+          {from: 'node_modules/rendr/client', to: 'rendr/client'}
+        ]
+      },
+      files: {
+        dest: 'public/bundle.js',
+        src: [
+          'app/**/*.js',
+          'node_modules/rendr/shared/**/*.coffee',
+          'node_modules/rendr/client/**/*.coffee'
+        ]
+      }
     }
   }
 });
 ```
 
-We can then use Stitch in the browser to require any of the source files.
+The `rendre_stitch` task shown above will output a single file named `bundle.js` that includes all dependencies, npm dependencies, plus your app source files.
+
+We can then use Stitch in the browser to require any of the source files. Stitch allows you to use the same syntax to `require` modules in client and server code.
 
 ```js
 var UserShowView = require('app/views/user_show_view');
@@ -69,6 +76,14 @@ Type: `Array`
 Default value: `[]`
 
 An array of file glob patterns to pass as dependencies to `stitch.createPackage()`. These files are prepended to the bundled JavaScript package as-is, without being wrapped as a Stitch module. This is useful for third-party client-side only files, such as jQuery, that aren't wrapped in a CommonJS module.
+
+#### options.npmDependencies
+Type: `Object`
+Default value: `{}`
+
+An object containing a list of files to pass as dependencies to `stitch.createPackage()`. Unlike `options.dependencies`, the files listed in `options.npmDependencies` are each wrapped as a Stitch module. This is useful for third-party files that are installed via npm and are used on both the client and server, such as Backbone.
+
+`options.npmDependencies` is optional and can be omitted.
 
 #### options.aliases
 Type: `Array`
@@ -92,6 +107,21 @@ Then, in the client-side you can require the module using the aliased path:
 ```js
 var something = require('fancy/path/in/client/lib/something');
 ```
+
+### Files
+
+#### files.dest
+Type: `String`
+Default value: ``
+
+`dest` is the file that the Stitch modules will be output to. 
+
+#### files.src
+Type: `Array`
+Default value: `[]`
+
+An array of files that is appended to the list of files in `options.dependencies` and `options.npmDependencies`. The entire list of files is then inserted into `files.dest`.
+
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
