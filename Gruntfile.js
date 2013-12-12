@@ -36,7 +36,7 @@ module.exports = function(grunt) {
             'test/fixtures/sample/deps/**/*.js',
           ],
           npmDependencies: {
-            grunt: 'lib/util/exit.js'
+            async: 'lib/async.js'
           },
           aliases: [
             {from: 'test/fixtures/sample/some_module/shared', to: 'rendr/shared'}
