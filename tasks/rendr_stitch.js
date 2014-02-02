@@ -24,6 +24,7 @@ module.exports = function(grunt) {
     // Merge task-specific and/or target-specific options with these defaults.
     var options = this.options({
       dependencies: [],
+      bowerDependencies: {},
       npmDependencies: {},
       aliases: []
     });
@@ -71,6 +72,12 @@ module.exports = function(grunt) {
             }
             return [filepath, dest];
           });
+
+          // Copy over any Bower dependencies
+          pathMaps = pathMaps.concat(grunt.util._.map(options.bowerDependencies, function(src, module) {
+            var filepath = path.normalize('bower_components/' + module + '/' + src);
+            return [filepath, module + '.js'];
+          }));
 
           // Copy over any NPM dependencies, so they can be `require`d in a sexy way.
           pathMaps = pathMaps.concat(grunt.util._.map(options.npmDependencies, function(src, module) {
